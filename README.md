@@ -1,7 +1,7 @@
-# CI/CD for Python App
+# CI/CD for Golang App
 
 ## Project Description
-This repository implements the deployment of the application [devops-sample-django-app](https://github.com/simbirsoft/devops-sample-django-app) using Kind and Helm. The CI/CD process is carried out using GitLab Runner, with two separate pipelines for the frontend and backend.
+This repository implements the deployment of the application using Kind and Helm. The CI/CD process is carried out using GitLab Runner, with two separate pipelines for the frontend and backend.
 
 ## Installing Kind
 
