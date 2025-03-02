@@ -1,0 +1,4 @@
+.deploy
+.dockerignore
+.env.example
+.git

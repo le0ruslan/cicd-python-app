@@ -1,0 +1,52 @@
+---
+
+.tags_anchor: &tags_anchor
+  tags:
+    - exercise-11
+
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_BRANCH
+
+stages:
+  - lint
+  - build
+  - deploy
+
+variables:
+  APP_DOCKERFILE: .deploy/docker/Dockerfile
+  APP_HELM_CHART: .deploy/k8s/helm
+  APP_VERSION: 1.0.0
+  APP_NAME: frontend
+  PROJECT_NAME: front-app
+
+include:
+  - project: 'simbirsoft1/devops-workshop-2024-12/ruslan.leontev/exercise-11-group/deploy-application'
+    ref: dev
+    file:
+    - '/jobs/lint.yml'
+    - '/jobs/build.yml'
+    - '/jobs/deploy.yml'
+
+Hadolint:
+  <<: *tags_anchor
+  extends: .lint
+
+GetImageTag:
+  <<: *tags_anchor
+  extends: .getimagetag
+
+Build:
+  <<: *tags_anchor
+  extends: .build
+  needs:
+    - GetImageTag
+
+Deploy:
+  <<: *tags_anchor
+  extends: .deploy_template
+  script:
+    - kubectl apply -f https://kind.sigs.k8s.io/examples/ingress/deploy-ingress-nginx.yaml
+    - !reference [.deploy_template, script]

@@ -1,0 +1,22 @@
+---
+
+.deploy_template:
+  stage: deploy
+  image:
+    name: alpine/helm:3.12.0
+    entrypoint: [""]
+  variables:
+    KUBECONFIG: .kubeconfig
+  before_script:
+    - echo ${KUBECONFIG_FILE} | base64 -d > ${KUBECONFIG}
+    - chmod 0600 ${KUBECONFIG}
+    - apk add --no-cache bash curl
+    - curl -LO https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl
+    - chmod +x kubectl
+    - mv kubectl /usr/local/bin/
+  script:
+    - helm upgrade --install ${APP_NAME} ${APP_HELM_CHART}/${APP_NAME}
+        --set image.tag=$IMAGE_TAG
+        --create-namespace
+        --namespace workshop2025
+        -f ${APP_HELM_CHART}/${APP_NAME}/values.yaml
